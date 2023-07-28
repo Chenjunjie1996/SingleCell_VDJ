@@ -3,6 +3,9 @@ from celescope.tools import utils
 from celescope.tools.step import Step
 
 
+PVAL_CUTOFF = 0.05
+
+
 def read_tsne(tsne_file):
     df = pd.read_csv(tsne_file, sep='\t')
     # compatible with old version
