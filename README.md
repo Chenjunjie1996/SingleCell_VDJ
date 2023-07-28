@@ -1,3 +1,3 @@
 # Introduction
-SingCell full length VDJ analysis pipeline.
+SingCell and BULK VDJ analysis pipeline.
 

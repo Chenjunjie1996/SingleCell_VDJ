@@ -1,0 +1,5 @@
+conda-forge::python=3.9
+bioconda::star=2.6.1b
+bioconda::igblast
+conda-forge::gcc
+bioconda::trust4=1.0.7
