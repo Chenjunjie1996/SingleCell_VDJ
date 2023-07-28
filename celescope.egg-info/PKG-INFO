@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: celescope
+Version: 1.16.2
+Summary: Single-Cell/Bulk VDJ Analysis Pipelines
+Home-page: https://github.com/Chenjunjie1996/SingleCell_VDJ
+Author: chenjunjie
+Author-email: cjj26163@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Introduction
+SingCell and BULK VDJ analysis pipeline.
+

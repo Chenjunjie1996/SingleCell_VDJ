@@ -1,0 +1,8 @@
+[console_scripts]
+celescope = celescope.celescope:main
+multi_bulk_vdj = celescope.bulk_vdj.multi_bulk_vdj:main
+multi_convert10X = celescope.convert10X.multi_convert10X:main
+multi_flv_CR = celescope.flv_CR.multi_flv_CR:main
+multi_flv_trust4 = celescope.flv_trust4.multi_flv_trust4:main
+multi_utils = celescope.utils.multi_utils:main
+multi_vdj = celescope.vdj.multi_vdj:main
