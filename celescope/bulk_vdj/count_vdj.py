@@ -353,7 +353,7 @@ class Count_vdj(Step):
         
         mean_diversity = round(np.median(df_table.Diversity), 2)
         self.add_metric(
-            name="Median  Diversity",
+            name="Median Diversity",
             value=mean_diversity,
             help_info="Median inverse Simpson index of all wells"
         )
