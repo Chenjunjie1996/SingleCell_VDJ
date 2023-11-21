@@ -71,7 +71,7 @@ class Convert(Step):
         
         with pysam.FastxFile(self.fq2) as fq2_fh:
             for entry in fq2_fh:
-                sgr_barcode = entry.name.split('_')[0]
+                sgr_barcode = entry.name.split(':')[0]
                 count_dict[sgr_barcode] += 1
 
         count_dict = dict(sorted(count_dict.items(), key=operator.itemgetter(1), reverse=True))
@@ -91,7 +91,7 @@ class Convert(Step):
         with pysam.FastxFile(self.fq2) as fq2_fh:
             for entry in fq2_fh:
                 name = entry.name
-                attrs = name.split('_')
+                attrs = name.split(':')
                 sgr_barcode, sgr_umi = attrs[0], attrs[1]
                 new_seq1, new_qual1 = self.convert_seq(sgr_barcode, sgr_umi)
                 out_fq1.write(f'@{name}\n{new_seq1}\n+\n{new_qual1}\n')

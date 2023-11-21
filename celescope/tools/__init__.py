@@ -17,13 +17,16 @@ PATTERN_DICT = {
 
 
 # count
-RAW_MATRIX_DIR_SUFFIX = ['raw_feature_bc_matrix', 'all_matrix']
-FILTERED_MATRIX_DIR_SUFFIX = ['filtered_feature_bc_matrix', 'matrix_10X']
-MATRIX_FILE_NAME = 'matrix.mtx'
-FEATURE_FILE_NAME = 'genes.tsv'
-BARCODE_FILE_NAME = 'barcodes.tsv'
-STAR_BAM_SUFFIX = 'aligned_nameSorted.bam'
+OUTS_DIR = 'outs'
+RAW_MATRIX_DIR_SUFFIX = 'raw'
+FILTERED_MATRIX_DIR_SUFFIX = 'filtered'
+MATRIX_FILE_NAME = 'matrix.mtx.gz'
+FEATURE_FILE_NAME = 'features.tsv.gz'
+BARCODE_FILE_NAME = 'barcodes.tsv.gz'
+STAR_BAM_SUFFIX = 'Aligned.out.bam'
 TAG_BAM_SUFFIX = 'aligned_posSorted_addTag.bam'
+STARSOLO_BAM_SUFFIX = 'Aligned.sortedByCoord.out.bam'
+COUNTS_FILE_NAME = 'counts.tsv'
 
 # mkref
 GENOME_CONFIG = 'celescope_genome.config'

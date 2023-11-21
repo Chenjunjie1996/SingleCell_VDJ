@@ -31,7 +31,7 @@ class Mapping(Step):
         if self.match_dir != 'None':
             self.contig_file = glob.glob(f'{args.match_out}/matched_contig_annotations.csv')[0]
 
-        self.h5ad = glob.glob(f'{self.match_dir}/06.analysis/*.h5ad')
+        self.h5ad = glob.glob(f'{self.match_dir}/outs/*.h5ad')
 
     @utils.add_log
     def process_h5ad(self):

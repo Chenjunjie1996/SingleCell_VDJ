@@ -136,9 +136,9 @@ class Match(Step):
         for entry in SGR_fasta_file:
             name = entry.name
             attrs = name.split('_')
-            cb = attrs[0]
+            cb = '_'.join(attrs[:3])
             if cb in self.match_cell_barcodes:
-                new_name = cb + '_' + attrs[1] + '_' + attrs[2]
+                new_name = cb + '_' + attrs[-2] + '_' + attrs[-1]
                 seq = entry.sequence
                 match_fasta_file.write(f'>{new_name}\n{seq}\n')
         match_fasta_file.close()

@@ -1,3 +1,4 @@
+import os
 import glob
 import re
 import sys
@@ -47,6 +48,8 @@ class Chemistry():
         """check chemistry in the fq1_list"""
         if self.assay == 'bulk_vdj':
             return ['bulk_vdj'] * len(self.fq1_list)
+        if self.assay == 'bulk_rna':
+            return ['bulk_rna'] * len(self.fq1_list)
         chemistry_list = []
         for fastq1 in self.fq1_list:
             self.check_chemistry.logger.info(fastq1)
@@ -147,6 +150,20 @@ class Chemistry():
 
         return chemistry
 
+    @staticmethod
+    def get_whitelist(chemistry):
+        # returns: [bclists]
+        repeat = 3
+        root_dir = f'{ROOT_PATH}/data/chemistry/{chemistry}'
+        bclist = f'{root_dir}/bclist'
+        bclist1 = f'{root_dir}/bclist1'
+        if os.path.exists(bclist1):
+            return [f'{root_dir}/bclist{i}' for i in range(1,repeat+1)]
+        elif os.path.exists(bclist):
+            return [bclist] * repeat
+        else:
+            sys.exit(f'No bclist found for chemistry {chemistry} under {root_dir}')
+
 
 class Barcode(Step):
     """
@@ -199,6 +216,7 @@ class Barcode(Step):
         self.noLinker = args.noLinker
         self.output_R1 = args.output_R1
         self.bool_flv = False
+        self.wells = args.wells
 
 
         # flv_trust4, flv_CR
@@ -313,11 +331,15 @@ class Barcode(Step):
         
 
     @staticmethod
-    def get_scope_bc(chemistry):
+    def get_scope_bc(chemistry, wells=""):
         """Return (linker file path, whitelist file path)"""
         try:
-            linker_f = glob.glob(f'{ROOT_PATH}/data/chemistry/{chemistry}/linker*')[0]
-            whitelist_f = f'{ROOT_PATH}/data/chemistry/{chemistry}/bclist'
+            if chemistry == 'bulk_rna':
+                linker_f = None
+                whitelist_f = f'{ROOT_PATH}/data/chemistry/{chemistry}/bclist{wells}'
+            else:
+                linker_f = glob.glob(f'{ROOT_PATH}/data/chemistry/{chemistry}/linker*')[0]
+                whitelist_f = f'{ROOT_PATH}/data/chemistry/{chemistry}/bclist'
         except IndexError:
             return None, None
         return linker_f, whitelist_f
@@ -393,26 +415,27 @@ class Barcode(Step):
         >>> mismatch_dict_list = [Barcode.get_mismatch_dict(['AAA'])] * 3
 
         >>> Barcode.check_seq_mismatch(seq_list, correct_set_list, mismatch_dict_list)
-        (True, True, 'AAAAAAAAA')
+        (True, True, 'AAA_AAA_AAA')
 
         >>> seq_list = ['AAA', 'AAA', 'AAA']
         >>> Barcode.check_seq_mismatch(seq_list, correct_set_list, mismatch_dict_list)
-        (True, False, 'AAAAAAAAA')
+        (True, False, 'AAA_AAA_AAA')
         '''
         bool_valid = True
         bool_corrected = False
-        corrected_seq = ''
+        corrected_seq_list = []
         for index, seq in enumerate(seq_list):
             if seq not in correct_set_list[index]:
                 if seq not in mismatch_dict_list[index]:
                     bool_valid = False
-                    return bool_valid, bool_corrected, corrected_seq
+                    return bool_valid, bool_corrected, ""
                 else:
                     bool_corrected = True
-                    corrected_seq += mismatch_dict_list[index][seq]
+                    corrected_seq_list.append(mismatch_dict_list[index][seq])
             else:
-                corrected_seq += seq
-        return bool_valid, bool_corrected, corrected_seq
+                corrected_seq_list.append(seq)
+
+        return bool_valid, bool_corrected, '_'.join(corrected_seq_list)
 
     @staticmethod
     def parse_whitelist_file(files: list, n_pattern: int, n_mismatch: int):
@@ -619,7 +642,7 @@ class Barcode(Step):
             # get linker and whitelist
             bc_pattern = PATTERN_DICT[chemistry]
             if (bc_pattern):
-                linker_file, whitelist_file = self.get_scope_bc(chemistry)
+                linker_file, whitelist_file = self.get_scope_bc(chemistry, self.wells)
                 whitelist_files = [whitelist_file]
             else:
                 bc_pattern = self.pattern
@@ -698,7 +721,7 @@ class Barcode(Step):
                             self.barcode_corrected_num += 1
                         cb = corrected_seq
                     else:
-                        cb = "".join(seq_list)
+                        cb = "_".join(seq_list)
 
                     self.clean_num += 1
                     self.barcode_qual_Counter.update(C_U_quals_ascii[:C_len])
@@ -715,19 +738,18 @@ class Barcode(Step):
                             self.match_num += 1
                             self.match_cbs.add(cb)
                             if self.barcode_read_Counter[cb] <= 80000:
-                                self.fh_fq2.write(f'@{cb}_{umi}_{self.total_num}\n{seq2}\n+\n{qual2}\n')
-                                self.fh_fq1.write(f'@{cb}_{umi}_{self.total_num}\n{cb}{umi}\n+\n{qual1}\n')
+                                self.fh_fq2.write(f'@{cb}:{umi}:{self.total_num}\n{seq2}\n+\n{qual2}\n')
+                                self.fh_fq1.write(f'@{cb}:{umi}:{self.total_num}\n{cb}{umi}\n+\n{qual1}\n')
                         elif self.assay == 'flv_CR':
-                            self.fh_fq2.write(f'@{cb}_{umi}_{self.total_num}\n{seq2}\n+\n{qual2}\n')
-                            self.fh_fq1.write(f'@{cb}_{umi}_{self.total_num}\n{cb}{umi}\n+\n{qual1}\n')
-
+                            self.fh_fq2.write(f'@{cb}:{umi}:{self.total_num}\n{seq2}\n+\n{qual2}\n')
+                            self.fh_fq1.write(f'@{cb}:{umi}:{self.total_num}\n{cb}{umi}\n+\n{qual1}\n')
                     else:
                         if self.args.stdout:
-                            print(f'@{cb}_{umi}_{self.total_num}\n{seq2}\n+\n{qual2}')
+                            print(f'@{cb}:{umi}:{self.total_num}\n{seq2}\n+\n{qual2}')
                         else:
-                            self.fh_fq2.write(f'@{cb}_{umi}_{self.total_num}\n{seq2}\n+\n{qual2}\n')
+                            self.fh_fq2.write(f'@{cb}:{umi}:{self.total_num}\n{seq2}\n+\n{qual2}\n')
                         if self.output_R1:
-                            self.fh_fq1.write(f'@{cb}_{umi}_{self.total_num}\n{seq1}\n+\n{qual1}\n')                   
+                            self.fh_fq1.write(f'@{cb}:{umi}:{self.total_num}\n{seq1}\n+\n{qual1}\n')                   
             
                 self.run.logger.info(self.fq1_list[i] + ' finished.')
 
@@ -807,6 +829,12 @@ lowQual will be regarded as low-quality bases.',
         '--output_R1',
         help="Output valid R1 reads.",
         action='store_true'
+    )
+    parser.add_argument(
+        '--wells',
+        help='The AccuraCode wells used (384 or 96).',
+        type=int,
+        default=384
     )
     if sub_program:
         parser.add_argument('--fq1', help='R1 fastq file. Multiple files are separated by comma.', required=True)

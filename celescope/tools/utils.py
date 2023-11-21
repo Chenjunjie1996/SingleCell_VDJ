@@ -17,7 +17,7 @@ from Bio.Seq import Seq
 import pandas as pd
 import pysam
 
-from celescope.tools.__init__ import FILTERED_MATRIX_DIR_SUFFIX, BARCODE_FILE_NAME 
+from celescope.tools.__init__ import FILTERED_MATRIX_DIR_SUFFIX, BARCODE_FILE_NAME, OUTS_DIR
 from celescope.__init__ import ROOT_PATH
 
 
@@ -257,9 +257,10 @@ def glob_file(pattern_list: list):
 
 def get_matrix_file_path(matrix_dir, file_name):
     """
-    compatible with gzip file
+    compatible with non-gzip file
     """
-    file_path_list = [f'{matrix_dir}/{file_name}', f'{matrix_dir}/{file_name}.gz']
+    non_gzip = file_name.strip('.gz')
+    file_path_list = [f'{matrix_dir}/{file_name}', f'{matrix_dir}/{non_gzip}']
     for file_path in file_path_list:
         if os.path.exists(file_path):
             return file_path
@@ -285,14 +286,12 @@ def get_matrix_dir_from_match_dir(match_dir):
     Returns:
         matrix_dir: PosixPath object
     """
-    matrix_dir_pattern_list = []
-    for matrix_dir_suffix in FILTERED_MATRIX_DIR_SUFFIX:
-        matrix_dir_pattern_list.append(f"{match_dir}/*count/*{matrix_dir_suffix}")
-  
-    matrix_dir = glob_file(matrix_dir_pattern_list)
-    get_matrix_dir_from_match_dir.logger.info(f"Matrix_dir :{matrix_dir}")
-
+    matrix_dir = f"{match_dir}/{OUTS_DIR}/{FILTERED_MATRIX_DIR_SUFFIX}"
+    if not os.path.exists(matrix_dir):
+        raise FileNotFoundError(f'{matrix_dir} not found')
+    
     return matrix_dir
+
 
 
 @add_log
@@ -316,9 +315,9 @@ def parse_match_dir(match_dir):
     match_dict = {}
 
     pattern_dict = {
-        'tsne_coord': [f'{match_dir}/*analysis*/*tsne_coord.tsv'],
-        'markers': [f'{match_dir}/*analysis*/*markers.tsv'],
-        'h5ad': [f'{match_dir}/*analysis*/*.h5ad'],
+        'tsne_coord': [f'{match_dir}/{OUTS_DIR}/tsne_coord.tsv'],
+        'markers': [f'{match_dir}/{OUTS_DIR}/markers.tsv'],
+        'h5ad': [f'{match_dir}/{OUTS_DIR}/rna.h5ad'],
     }
 
     for file_key in pattern_dict:
