@@ -26,8 +26,8 @@ pip install celescope
 CeleScope contains interfaces `multi_{assay}` to generate pipeline scripts for all assays. Assays can be one of:
 |assay|data|
 |---|------
-|[vdj](./assay/multi_vdj.md)|single-cell VDJ
-|[flv_trust4](./assay/multi_flv_trust4.md)|single-cell full length VDJ
-|[flv_trust4](./assay/multi_flv_CR.md)|single-cell full length VDJ
-|[bulk_vdj](assay/multi_bulk_vdj.md)|bulk_vdj
-|[rna](assay/multi_convert10X.md)|single-cell RNA-Seq
+|[vdj](doc/assay/multi_vdj.md)|single-cell VDJ
+|[flv_trust4](doc/assay/multi_flv_trust4.md)|single-cell full length VDJ
+|[flv_trust4](doc/assay/multi_flv_CR.md)|single-cell full length VDJ
+|[bulk_vdj](doc/assay/multi_bulk_vdj.md)|bulk_vdj
+|[rna](doc/assay/multi_convert10X.md)|single-cell RNA-Seq
