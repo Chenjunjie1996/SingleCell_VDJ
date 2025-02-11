@@ -34,7 +34,6 @@ CeleScope contains interfaces `multi_{assay}` to generate pipeline scripts for a
 |[bulk_vdj](assay/multi_bulk_vdj.md)|bulk_vdj|NA|
 |[convert10X](assay/multi_convert10X.md)|convert10X|NA|
 
-
 Click on the hyperlinks above to view the uasge for each assay. Run `multi_{assay} -h` in the command line to display available arguments. For example：
 ```
 $ multi_rna -h
