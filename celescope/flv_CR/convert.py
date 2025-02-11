@@ -23,6 +23,7 @@ WHITELIST_10X_PATH = [
 CHEMISTRY_DICT = {
     'V2': ['737K-august-2016.txt', 10],
     'V3': ['3M-february-2018.txt.gz', 12],
+    'arc': ['737K-arc-v1.txt.gz', 12]
 }
 
 
@@ -154,7 +155,7 @@ def get_opts_convert(parser, sub_program):
     parser.add_argument(
         '--tenX_chemistry',
         help='10X chemistry version, V2 or V3 for scRNA, V2 for VDJ',
-        choices=['V2', 'V3'],
+        choices=['V2', 'V3', 'arc'],
         default='V2')
     if sub_program:
         s_common(parser)
