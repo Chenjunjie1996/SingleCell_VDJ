@@ -1,26 +1,51 @@
 ## Download and unpack cellranger soft and reference file.
 ```
-wget -O cellranger-7.0.1.tar.gz "https://cf.10xgenomics.com/releases/cell-vdj/cellranger-7.0.1.tar.gz?Expires=1668447380&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9jZi4xMHhnZW5vbWljcy5jb20vcmVsZWFzZXMvY2VsbC12ZGovY2VsbHJhbmdlci03LjAuMS50YXIuZ3oiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE2Njg0NDczODB9fX1dfQ__&Signature=bZoM-0W1ExsZWYVhUJ80oSzKEaYTdlf1NoFiKLswTLWGveefjH1fJOkd1c4kMxCiTDfohyDpNWzk-xBMBme-u3r-0X7WFYSvfCdMyo2CSM4K~Ur73Sn30REr0kr7oC9byrlLMqG2mtO7DLfprDrAZGZDkfyDLpGJ8hb1qWSsWqRo8CxbqRzA69h0v65Qn86HMrHAeotdhxUVmBIvONwPmsC90J9K4gVDw1sDF39F4f89zguTGgSAY6mUdPG1cvHHZMeuLaJZDqRgODysOhsB-keYXW8cYa-R5chh9s1ASC4yA1QKSe-fBdB1-FLQdAwMjNEHdd7uGCWzLj4J~AXgJg__&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA"
+Soft:
+wget -O cellranger-8.0.1.tar.gz "https://cf.10xgenomics.com/releases/cell-exp/cellranger-8.0.1.tar.gz?Expires=1738964769&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA&Signature=amrSZeLDPqCjpbjb7Yek7kyj~7zVlibyIFBx-wDdmiZLloujnDEEfI9iNEcUDXP7qhOT39vBtuqx8qrJ0WbstCERfyAY4n5U7hrd2Go-NxYOseTFk8vawTRlCxrGEy7nyS76JrvwT27V08xgQJCD5uxob0pnxIBtcKJYmSxPZ8x6KslsSX1OTsJy8MPXMJaEepUsDkpgcJOo0L3gKAoMD9NQVA-6ehJ6mtjoDET-StLfNxCTGbm3p2AoyHbuYuhSB1imxhNQwMB7dVpIYRu7AHO8EfkcrVvL4CErKDY-Vvty4sZIyLTtOQGcAx-K78h0m3-8v0dT8Awj53S0TVxZGA__"
+tar -xzvf cellranger-8.0.1.tar.gz
+
+If the link is invalid, you can download it from the official website
+https://www.10xgenomics.com/support/software/cell-ranger/downloads/previous-versions
 
 Reference: human and mouse
-wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz
-wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0.tar.gz
+wget "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0.tar.gz"
+wget "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0.tar.gz"
 
-tar -xzvf cellranger-7.0.1.tar.gz
-tar -xzvf refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz
+tar -xzvf refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0.tar.gz
 tar -xzvf refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0.tar.gz
+
+Reference: Other species
+Should provide customized reference and primer sequence file.
+Rabbit: 
+https://github.com/Chenjunjie1996/vdj_reference/tree/main/Rabbit
 ```
 
 ## Usage
 
 ```
-conda activate celescope
+Human or mouse:
+conda activate SingleCell_VDJ
 multi_flv_CR \
-    --mapfile ./test.mapfile \
+    --mapfile ./mapfile \
     --thread 8 \
-    --seqtype TCR \
-    --ref_path "/soft/cellranger/vdj_ref/6.0.0/hs/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0" \
-    --soft_path "/soft/cellranger/cellranger-7.0.1/cellranger" \
+    --seqtype BCR \
+    --allowNoLinker \
+    --ref_path "/path/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0" \
+    --soft_path "/path/cellranger/cellranger-8.0.1/cellranger" \
+    --not_refine\
+    --mod shell
+
+Other species: 
+conda activate SingleCell_VDJ
+multi_flv_CR \
+    --mapfile ./mapfile \
+    --thread 8 \
+    --seqtype BCR \
+    --allowNoLinker \
+    --ref_path "/path/ref/vdj_IMGT_rabbit" \
+    --soft_path "/path/cellranger/cellranger-8.0.1/cellranger" \
+    --other_param " --inner-enrichment-primers=/path/ref/primer.txt " \
+    --not_refine \
     --mod shell
 ```
 ## Features
