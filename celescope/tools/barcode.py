@@ -40,6 +40,7 @@ class Chemistry():
             _, self.linker_4_v2_set_list, self.linker_4_v2_mismatch_list = Barcode.parse_chemistry('scopeV2.2.1')
         self.pattern_dict_v3, *_, self.linker_v3_set_list, self.linker_v3_mismatch_list = Barcode.parse_chemistry('scopeV3.0.1')
         self.pattern_dict_flv, *_, self.linker_flv_set_list, self.linker_flv_mismatch_list = Barcode.parse_chemistry('flv')
+        self.pattern_dict_flv_v2, *_, self.linker_flv_v2_set_list, self.linker_flv_v2_mismatch_list = Barcode.parse_chemistry('flv-V2')
         self.pattern_dict_flv_rna, *_, self.linker_flv_rna_set_list, self.linker_flv_rna_mismatch_list = Barcode.parse_chemistry('flv_rna')
 
 
@@ -112,11 +113,18 @@ class Chemistry():
         if bool_valid:
             return "scopeV2.2.1"
 
+        linker_flv_v2 = Barcode.get_seq_str(seq, self.pattern_dict_flv_v2["L"])
+        bool_valid, _, _ = Barcode.check_seq_mismatch(
+            [linker_flv_v2], self.linker_flv_v2_set_list, self.linker_flv_v2_mismatch_list)
+        if bool_valid:
+            return "flv-V2"
+        
         linker_flv = Barcode.get_seq_str(seq, self.pattern_dict_flv["L"])
         bool_valid, _, _ = Barcode.check_seq_mismatch(
             [linker_flv], self.linker_flv_set_list, self.linker_flv_mismatch_list)
         if bool_valid:
             return "flv"
+
 
         return
 
@@ -211,9 +219,7 @@ class Barcode(Step):
         self.lowNum = args.lowNum
         self.lowQual = args.lowQual
         self.filterNoPolyT = args.filterNoPolyT
-        self.allowNoLinker = args.allowNoLinker
         self.nopolyT = args.nopolyT  # true == output nopolyT reads
-        self.noLinker = args.noLinker
         self.output_R1 = args.output_R1
         self.bool_flv = False
         self.wells = args.wells
@@ -240,9 +246,6 @@ class Barcode(Step):
         if self.nopolyT:
             self.nopolyT_1 = f'{self.out_prefix}_noPolyT_1.fq'
             self.nopolyT_2 = f'{self.out_prefix}_noPolyT_2.fq'
-        if self.noLinker:
-            self.noLinker_1 = f'{self.out_prefix}_noLinker_1.fq'
-            self.noLinker_2 = f'{self.out_prefix}_noLinker_2.fq'
 
         self.open_files()
 
@@ -498,9 +501,6 @@ class Barcode(Step):
             self.fh_nopolyT_fq1 = xopen(self.nopolyT_1, 'w')
             self.fh_nopolyT_fq2 = xopen(self.nopolyT_2, 'w')
 
-        if self.noLinker:
-            self.fh_nolinker_fq1 = xopen(self.noLinker_1, 'w')
-            self.fh_nolinker_fq2 = xopen(self.noLinker_2, 'w')
 
     def close_files(self):
         if self.output_R1 or self.bool_flv:
@@ -512,9 +512,6 @@ class Barcode(Step):
             self.fh_nopolyT_fq1.close()
             self.fh_nopolyT_fq2.close()
         
-        if self.noLinker:
-            self.fh_nolinker_fq1.close()
-            self.fh_nolinker_fq2.close()
 
     @utils.add_log
     def add_step_metrics(self):
@@ -690,21 +687,6 @@ class Barcode(Step):
                         self.lowQual_num += 1
                         continue
 
-                    # linker filter
-                    if bool_L and (not self.allowNoLinker):
-                        seq_str = Barcode.get_seq_str(seq1, pattern_dict['L'])
-                        bool_valid, bool_corrected, _ = Barcode.check_seq_mismatch(
-                            [seq_str], linker_set_list, linker_mismatch_list)
-                        if not bool_valid:
-                            self.no_linker_num += 1
-                            if self.noLinker:
-                                self.fh_nolinker_fq1.write(
-                                    f'@{header1}\n{seq1}\n{seq_str}\n{qual1}\n')
-                                self.fh_nolinker_fq2.write(
-                                    '@%s\n%s\n+\n%s\n' % (header2, seq2, qual2))
-                            continue
-                        elif bool_corrected:
-                            self.linker_corrected_num += 1
 
                     # barcode filter
                     seq_list = self.get_seq_list(seq1, pattern_dict, 'C')
@@ -806,18 +788,8 @@ lowQual will be regarded as low-quality bases.',
         action='store_true',
     )
     parser.add_argument(
-        '--noLinker',
-        help='Outputs R1 reads without correct linker.',
-        action='store_true',
-    )
-    parser.add_argument(
         '--filterNoPolyT',
         help="Filter reads without PolyT.",
-        action='store_true'
-    )
-    parser.add_argument(
-        '--allowNoLinker',
-        help="Allow valid reads without correct linker.",
         action='store_true'
     )
     parser.add_argument(
