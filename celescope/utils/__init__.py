@@ -1,2 +1,2 @@
-STEPS = ['mapping_vdj']
-__ASSAY__ = 'utils'
+STEPS = ["mapping_vdj"]
+__ASSAY__ = "utils"
