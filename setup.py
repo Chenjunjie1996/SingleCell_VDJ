@@ -16,7 +16,7 @@ entry_dict = {
 
 
 setuptools.setup(
-    name="celescope",
+    name="singlecell_vdj",
     version=__VERSION__,
     author="chenjunjie",
     author_email="cjj26163@gmail.com",
