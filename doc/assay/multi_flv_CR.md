@@ -29,19 +29,21 @@ multi_flv_CR \
     --mapfile ./mapfile \
     --thread 8 \
     --seqtype BCR \
-    --allowNoLinker \
     --ref_path "/path/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0" \
     --soft_path "/path/cellranger/cellranger-8.0.1/cellranger" \
     --not_refine\
     --mod shell
 
+bash ./shell/{sample}.sh
+```
+
 Other species: 
+```
 conda activate SingleCell_VDJ
 multi_flv_CR \
     --mapfile ./mapfile \
     --thread 8 \
     --seqtype BCR \
-    --allowNoLinker \
     --ref_path "/path/ref/vdj_IMGT_rabbit" \
     --soft_path "/path/cellranger/cellranger-8.0.1/cellranger" \
     --other_param " --inner-enrichment-primers=/path/ref/primer.txt " \
