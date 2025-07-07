@@ -28,10 +28,8 @@ pip install .
 CeleScope contains interfaces `multi_{assay}` to generate pipeline scripts for all assays. Assays can be one of:
 |assay|data|kit|
 |---|------|--------------|
-|[vdj](./assay/multi_vdj.md)|single-cell VDJ|GEXSCOPE<sup>TM</sup> IR|
 |[flv_CR](./assay/multi_flv_CR.md)|single-cell full length VDJ|sCircle<sup>TM</sup>|
 |[flv_trust4](./assay/multi_flv_trust4.md)|single-cell full length VDJ|sCircle<sup>TM</sup>|
-|[bulk_vdj](assay/multi_bulk_vdj.md)|bulk_vdj|NA|
 |[convert10X](assay/multi_convert10X.md)|convert10X|NA|
 
 Click on the hyperlinks above to view the uasge for each assay. Run `multi_{assay} -h` in the command line to display available arguments. For example：
