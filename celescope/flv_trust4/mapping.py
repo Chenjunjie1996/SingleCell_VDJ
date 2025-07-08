@@ -39,7 +39,7 @@ class Mapping(Step):
             step_name="barcode",
             key="Valid Matched Reads",
         )
-        
+
         self.add_metric(
             name="Reference",
             value=self._ref,
