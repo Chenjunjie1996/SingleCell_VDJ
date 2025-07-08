@@ -183,6 +183,7 @@ class Match(Step):
         raw_clonotypes.drop(["frequency", "proportion"], axis=1, inplace=True)
         df_match = pd.read_csv(self.match_annotation)
         df_match = df_match[df_match["productive"] == True]
+        df_match = df_match[df_match["raw_clonotype_id"] != "None"]
 
         # Count frequency and proportion
         df_match = (
