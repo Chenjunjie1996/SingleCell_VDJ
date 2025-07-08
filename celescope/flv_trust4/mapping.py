@@ -28,8 +28,6 @@ class Mapping(Step):
         super().__init__(args, display_title=display_title)
 
         self._ref = args.ref
-        self._barcodeRange = args.barcodeRange
-        self._umiRange = args.umiRange
         self._match_fq1 = args.match_fq1
         self._match_fq2 = args.match_fq2
         self._chains = CHAIN[args.seqtype]
@@ -41,14 +39,18 @@ class Mapping(Step):
             step_name="barcode",
             key="Valid Matched Reads",
         )
+        
+        self.add_metric(
+            name="Reference",
+            value=self._ref,
+            help_info="Reference used for mapping.",
+        )
 
     @utils.add_log
     def extract_chain_reads(self):
         """
         bcrtcr.fq + {chains}.fq
         """
-        cb_range = self._barcodeRange.split(" ")
-        umi_range = self._umiRange.split(" ")
 
         map_index_prefix = ["bcrtcr"] + self._chains
         n_map = len(map_index_prefix)
@@ -57,8 +59,6 @@ class Mapping(Step):
         map_outdirs = [self.outdir] * n_map
         map_fq1 = [self._match_fq1] * n_map
         map_fq2 = [self._match_fq2] * n_map
-        map_cb_range = [cb_range] * n_map
-        map_umi_range = [umi_range] * n_map
         map_n_thread = [self._single_thread] * n_map
 
         with Pool(n_map) as pool:
@@ -71,8 +71,6 @@ class Mapping(Step):
                     samples,
                     map_fq1,
                     map_fq2,
-                    map_cb_range,
-                    map_umi_range,
                     map_n_thread,
                 ),
             )
@@ -86,8 +84,6 @@ class Mapping(Step):
         sample,
         fq1,
         fq2,
-        barcodeRange,
-        umiRange,
         single_thread,
     ):
         """
@@ -98,10 +94,7 @@ class Mapping(Step):
             f"fastq-extractor -t {single_thread} "
             f"-f {REF_DIR}/{ref}/{index_prefix}.fa "
             f"-o {outdir}/{sample}_{index_prefix} "
-            f"--barcodeStart {barcodeRange[0]} "
-            f"--barcodeEnd {barcodeRange[1]} "
-            f"--umiStart {umiRange[0]} "
-            f"--umiEnd {umiRange[1]} "
+            f"--readFormat bc:0:25,um:25:-1 "
             f"-u {fq2} "
             f"--barcode {fq1} "
             f"--UMI {fq1} "
@@ -159,10 +152,4 @@ def get_opts_mapping(parser, sub_program):
     )
     parser.add_argument(
         "--seqtype", help="TCR/BCR seq data.", choices=["TCR", "BCR"], required=True
-    )
-    parser.add_argument(
-        "--barcodeRange", help="Barcode range in fq1, INT INT CHAR.", default="0 23 +"
-    )
-    parser.add_argument(
-        "--umiRange", help="UMI range in fq1, INT INT CHAR.", default="24 -1 +"
     )

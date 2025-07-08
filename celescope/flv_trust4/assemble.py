@@ -48,8 +48,6 @@ class Assemble(Step):
 
         self.ref = args.ref
         self.seqtype = args.seqtype
-        self.barcodeRange = args.barcodeRange
-        self.umiRange = args.umiRange
         self.candidate_fq = args.candidate_fq
 
         if args.not_split:
@@ -313,10 +311,4 @@ def get_opts_assemble(parser, sub_program):
     )
     parser.add_argument(
         "--seqtype", help="TCR/BCR seq data.", choices=["TCR", "BCR"], required=True
-    )
-    parser.add_argument(
-        "--barcodeRange", help="Barcode range in fq1, INT INT CHAR.", default="0 23 +"
-    )
-    parser.add_argument(
-        "--umiRange", help="UMI range in fq1, INT INT CHAR.", default="24 -1 +"
     )
