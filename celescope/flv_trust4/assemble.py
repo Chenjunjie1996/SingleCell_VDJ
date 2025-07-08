@@ -306,7 +306,7 @@ def get_opts_assemble(parser, sub_program):
     parser.add_argument(
         "--ref",
         help="reference name",
-        choices=["hg19", "hg38", "GRCm38", "other"],
+        choices=["hg19", "hg38", "GRCm38", "rabbit"],
         required=True,
     )
     parser.add_argument(
