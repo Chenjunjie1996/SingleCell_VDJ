@@ -36,6 +36,7 @@ class Cellranger(Step):
             f"--sample={self.sample} "
             f"--localcores={self.thread} "
             f"--localmem={self.mem} "
+            "--create-bam true"
         )
 
         if self.other_param:

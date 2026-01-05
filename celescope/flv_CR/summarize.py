@@ -50,12 +50,17 @@ class Summarize(Step):
         # in files
         annotation_file = f"{self.assemble_out}/filtered_contig_annotations.csv"
         self.df_annotation = pd.read_csv(annotation_file, sep=",", index_col=None)
+        all_annotation_file = f"{self.assemble_out}/all_contig_annotations.csv"
+        self.df_all_annotation = pd.read_csv(all_annotation_file, sep=",", index_col=None)
         tenX_fasta_file = f"{self.assemble_out}/filtered_contig.fasta"
         self.tenX_fasta_fh = pysam.FastxFile(tenX_fasta_file)
 
         # out
         self.filtered_contig_annotations = (
             f"{self.outdir}/filtered_contig_annotations.csv"
+        )
+        self.all_contig_annotations = (
+            f"{self.outdir}/all_contig_annotations.csv"
         )
         self.filter_contig_fasta = f"{self.outdir}/filtered_contig.fasta"
 
@@ -65,6 +70,22 @@ class Summarize(Step):
         Convert 10X barcode to SGR barcode format.
         """
 
+        # all contig annotation
+        self.df_all_annotation["barcode"] = self.df_all_annotation["barcode"].apply(
+            lambda x: self.tenX_sgr[x.split("-")[0]]
+        )
+        self.df_all_annotation["contig_id"] = self.df_all_annotation["contig_id"].apply(
+            lambda x: self.tenX_sgr[x.split("-")[0]]
+            + "_"
+            + x.split("_")[1]
+            + "_"
+            + x.split("_")[2]
+        )
+        self.df_all_annotation.to_csv(
+            self.all_contig_annotations, sep=",", index=False
+        )
+
+        # filtered contig annotation
         self.df_annotation["barcode"] = self.df_annotation["barcode"].apply(
             lambda x: self.tenX_sgr[x.split("-")[0]]
         )
