@@ -3,6 +3,7 @@ import subprocess
 import pysam
 import pandas as pd
 import json
+import sys
 
 from collections import defaultdict
 
@@ -126,9 +127,32 @@ class Mapping(cellranger_metrics):
 
         for chain in self.chains:
             name = f"Reads Mapped to {chain}"
+            try:
+                value = self.metrics_dict[name]
+            except KeyError as e:
+                mapping_keys = [k for k in self.metrics_dict if "Reads Mapped" in k]
+                is_tcr = any(k.startswith("Reads Mapped to TR") for k in mapping_keys)
+                is_bcr = any(k.startswith("Reads Mapped to IG") for k in mapping_keys)
+
+                if self.seqtype == "BCR" and is_tcr:
+                    suggestion = "检测到TCR数据，请把--seqtype改成TCR"
+                elif self.seqtype == "TCR" and is_bcr:
+                    suggestion = "检测到BCR数据，请把--seqtype改成BCR"
+
+                print(
+                    f"\n{'='*60}\n"
+                    f"KeyError: {e}\n"
+                    f"当前参数: seqtype={self.seqtype}\n"
+                    f"实际mapping: {mapping_keys}\n"
+                    f"{suggestion}\n"
+                    f"{'='*60}",
+                    file=sys.stderr
+                )
+                raise KeyError("请检查 seqtype")
+
             self.add_metric(
                 name=name,
-                value=self.metrics_dict[name],
+                value=value,
                 help_info=f"Fraction of reads that map partially or wholly to a germline {chain} gene segment.",
             )
 
