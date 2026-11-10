@@ -146,7 +146,7 @@ class Mapping(cellranger_metrics):
                     f"实际mapping: {mapping_keys}\n"
                     f"{suggestion}\n"
                     f"{'='*60}",
-                    file=sys.stderr
+                    file=sys.stderr,
                 )
                 raise KeyError("请检查 seqtype")
 
